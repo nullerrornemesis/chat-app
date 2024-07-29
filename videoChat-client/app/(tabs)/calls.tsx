@@ -1,77 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
   Text,
   TouchableOpacity,
-  Alert,
   FlatList,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import ChatList from "../../components/ChatListProps";
-import { useNavigation } from "@react-navigation/native";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
-export default function HomeScreen() {
+export default function CallsScreen() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [chats, setChats] = useState<{ id: string; name: string }[]>([]);
-  const navigation = useNavigation();
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
-    })();
-  }, []);
+  const dropdownOptions = ["Option 1", "Option 2", "Option 3"];
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
   };
 
-  const handleCameraPress = async () => {
-    if (hasPermission === null) {
-      Alert.alert("Permission not yet determined");
-      return;
-    }
-
-    if (hasPermission === false) {
-      Alert.alert("No access to camera");
-      return;
-    }
-
-    try {
-      // Open camera
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (result.assets && result.assets.length > 0) {
-        const image = result.assets[0];
-        console.log(image.uri);
-      } else {
-        console.log("No image selected");
-      }
-    } catch (error) {
-      console.error("Error opening camera:", error);
-    }
-  };
-
-  const dropdownOptions = ["Option 1", "Option 2", "Option 3"];
-
-  const handleStartChatting = () => {
-    navigation.navigate("explore");
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Chirps</Text>
+        <Text style={styles.title}>Calls</Text>
+
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={handleCameraPress}>
+          <TouchableOpacity>
             <MaterialIcons name="camera-alt" size={24} color="white" />
           </TouchableOpacity>
           <TouchableOpacity
@@ -95,7 +48,16 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
-      <ChatList chats={chats} onStartChatting={handleStartChatting} />
+
+      <View style={styles.content}>
+        <Text style={styles.noContentText}>
+          You have no calls. Make new calls by tapping the button below.
+        </Text>
+      </View>
+
+      <TouchableOpacity style={styles.floatingButton}>
+        <FontAwesome6 name="phone" size={24} color="black" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -146,5 +108,31 @@ const styles = StyleSheet.create({
   dropdownItemText: {
     fontSize: 16,
     color: "black",
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noContentText: {
+    fontSize: 18,
+    color: "white",
+    textAlign: "center",
+  },
+  floatingButton: {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#2c9c3a",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+  },
+  floatingButtonText: {
+    color: "white",
+    fontSize: 24,
   },
 });
